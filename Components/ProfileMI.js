@@ -9,10 +9,11 @@ import {
   Button,
   TouchableOpacity,
   ImageBackground,
-  Alert
+  Alert,
+  KeyboardAvoidingView
   } from 'react-native';
 import {
-  FormLabel, 
+  FormLabel,
   FormInput
 } from 'react-native-elements';
 import {
@@ -20,13 +21,34 @@ import {
   Permissions
 } from 'expo';
 
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import {auth, db, fb } from '../Firebase/Firebase';
+import GetLocalisation from '../Components/GetLocalisation';
 
 class ProfileMI extends React.Component {
   constructor() {
     super();
     this.moniteur = db.ref('users/'+auth.currentUser.uid).child('moniteurOuAutoEcole')
-    this.state = {moniteurOuAutoEcole: '', image: null, uploading: false}
+    this.state = {
+      moniteurOuAutoEcole: '',
+      image: null,
+      uploading: false,
+      address:null,
+      lat:null,
+      lng:null
+    }
+  }
+
+  _getAdd(data){
+     console.log("add",data);
+     this.setState(
+         {
+           lat: data.geometry.location.lat,//  selected coordinates latitude
+           lng:data.geometry.location.lng, //  selected coordinates longitute
+
+         }
+       );
+    console.log("this.state.coordinates",this.state.lat,this.state.lng); ///
   }
 
   // Recuperation value in Storage
@@ -43,7 +65,7 @@ class ProfileMI extends React.Component {
     auth.onAuthStateChanged(function(user) {
       if(user) {
         return auth.currentUser.displayName;
-      } 
+      }
     });
   }
 
@@ -61,7 +83,7 @@ class ProfileMI extends React.Component {
   }
 
   // Access to camera roll and select a picture
-  _onChooseImagePress = async () => {  
+  _onChooseImagePress = async () => {
     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
     console.log(status);
     if(status === 'granted'){
@@ -74,7 +96,7 @@ class ProfileMI extends React.Component {
   }
 
   // Access to camera and take a picture
-  _takeAPicture = async () => {  
+  _takeAPicture = async () => {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     if (status === 'granted') {
       let result = await ImagePicker.launchCameraAsync({
@@ -104,7 +126,7 @@ class ProfileMI extends React.Component {
   }
 
   // Storage picture
-  uploadImageAsync = async (uri) => {    
+  uploadImageAsync = async (uri) => {
     console.log("ok");
     const blob = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
@@ -130,11 +152,13 @@ class ProfileMI extends React.Component {
   render(){
     let { image } = this.state;
     return(
+      <KeyboardAvoidingView
+       behavior='position'>
       <View>
         <Image/>
         <Text>{this._completeProfile()}</Text>
         <Text>Nom et Prénom : {this._readName()}</Text>
-        <Text>Localisation : </Text>
+        <Text>Localisation :</Text>
         <Text>Années d'expérience dans les auto-écoles : {this._readName()}</Text>
         <Text>Tarifs : </Text>
         <Text>Siret :</Text>
@@ -144,7 +168,32 @@ class ProfileMI extends React.Component {
         <Text>Carte grise du véhicule :</Text>
         <Text>Attestation d'assurance du véhicule :</Text>
         <Text>Attestation RC Pro :</Text>
+        <GooglePlacesAutocomplete
+          placeholder="La ville de votre auto école"
+          minLength={2} // minimum length of text to search
+          autoFocus={false}
+          returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
+          listViewDisplayed="auto" // true/false/undefined
+          fetchDetails={true}
+          renderDescription={row => row.description} // custom description render
+          onPress={(data,details = null) => {
+            var data = details;
+            this._getAdd(data);
+          }}
+          getDefaultValue={() => {
+            return ''; // text input default value
+          }}
+          query={{
+            // available options: https://developers.google.com/places/web-service/autocomplete
+            key: 'AIzaSyBfHihQQAB9G8TTbnSYCvB9lDzOuqGg1qA',
+            language: 'fr', // language of the results
+            types: '(cities)', // default: 'geocode'
+          }}
+
+          debounce={200}
+        />
       </View>
+      </KeyboardAvoidingView>
     )
   }
 }
