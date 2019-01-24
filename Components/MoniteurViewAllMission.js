@@ -74,8 +74,7 @@ getMission(){
                  <Text>Horaire : {this.state.arrawMissions[idAutoEcole[i]].Missions[idMission[y]].EndHour}{'\n'}</Text>
                  <Text>Permis demandé(s){'\n'}</Text>
                  <Text>{this.state.arrawMissions[idAutoEcole[i]].Missions[idMission[y]].typePermisSelect}</Text>
-                 <Text><TouchableOpacity><Text> Je me propose !</Text></TouchableOpacity></Text>
-               </Text></View>)
+               </Text><TouchableOpacity><Text> Je me propose !</Text></TouchableOpacity></View>)
                  console.log('Date',this.state.arrawMissions[idAutoEcole[i]].Missions[idMission[y]].StartDate)
                  console.log('Hour',this.state.arrawMissions[idAutoEcole[i]].Missions[idMission[y]].StartHour)
                  console.log('Date2',this.state.arrawMissions[idAutoEcole[i]].Missions[idMission[y]].EndDate)
