@@ -57,7 +57,7 @@ class GetLocalisation extends React.Component {
     return(
       <View  style={{ flex: 1 }}>
             <GooglePlacesAutocomplete
-        placeholder="Votre ville"
+        placeholder=" "
         minLength={2} // minimum length of text to search
         /*ng-model-options="{ debounce: 15000 }"*/
         autoFocus={false}
@@ -75,7 +75,7 @@ class GetLocalisation extends React.Component {
         }}
         query={{
           // available options: https://developers.google.com/places/web-service/autocomplete
-          key: 'AIzaSyC58rA63FNv5SEDnjzFhJdawpb45AlhzfA',
+      
           language: 'fr', // language of the results
           types: '(cities)', // default: 'geocode'
         }}
