@@ -27,6 +27,7 @@ class GetLocalisation extends React.Component {
                     address:null,
                     lat:null,
                     lng:null,
+                    city:null
                 }
             }
 
@@ -35,12 +36,20 @@ class GetLocalisation extends React.Component {
         this.setState(
             {
               lat: data.geometry.location.lat,//  selected coordinates latitude
-              lng:data.geometry.location.lng, //  selected coordinates longitute
-
+              lng: data.geometry.location.lng, //  selected coordinates longitute
+             city: data.formatted_address
             }
           );
-       console.log("this.state.coordinates",this.state.lat,this.state.lng); ///
+       console.log("this.state.coordinates",this.state.lat,this.state.lng,'city',this.state.city); ///
+
      }
+
+     _ajoutLocalisation = () => {
+       db.ref('moniteurs/' + auth.currentUser.uid + "/Localisation").update({
+         lat:this.state.lat,
+         lng:this.state.lng,
+         city:this.state.city
+     })}
 
 
 
@@ -48,24 +57,25 @@ class GetLocalisation extends React.Component {
     return(
       <View  style={{ flex: 1 }}>
             <GooglePlacesAutocomplete
-        placeholder="La ville de votre "
+        placeholder="Votre ville"
         minLength={2} // minimum length of text to search
         /*ng-model-options="{ debounce: 15000 }"*/
         autoFocus={false}
         returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
-        listViewDisplayed="auto" // true/false/undefined
+        listViewDisplayed="false" // true/false/undefined
         fetchDetails={true}
         renderDescription={row => row.description} // custom description render
         onPress={(data,details = null) => {
           var data = details;
           this._getAdd(data);
+          this._ajoutLocalisation();
         }}
         getDefaultValue={() => {
           return ''; // text input default value
         }}
         query={{
           // available options: https://developers.google.com/places/web-service/autocomplete
-          key: 'AIzaSyDUL_a1FmGHb7LY6zKDG9fsYMRNpjVFd6A',
+          key: 'AIzaSyC58rA63FNv5SEDnjzFhJdawpb45AlhzfA',
           language: 'fr', // language of the results
           types: '(cities)', // default: 'geocode'
         }}
